@@ -1,0 +1,14 @@
+{
+  "name": "pd-uniapp-shop",
+  "appid": "__UNI__SHOP_DEMO__",
+  "description": "uniapp 电商示例",
+  "versionName": "1.0.0",
+  "versionCode": "100",
+  "transformPx": false,
+  "mp-weixin": {
+    "appid": "wx94f6cd4cb79f6c67",
+    "setting": {
+      "urlCheck": false
+    }
+  }
+}
