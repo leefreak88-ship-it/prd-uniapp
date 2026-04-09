@@ -42,7 +42,9 @@ onPullDownRefresh(async () => {
 });
 
 const gotoLogin = () => {
-  uni.navigateTo({ url: "/pages/login/index" });
+  uni.navigateTo({
+    url: `/pages/login/index?redirect=${encodeURIComponent(currentTabPath)}`,
+  });
 };
 </script>
 

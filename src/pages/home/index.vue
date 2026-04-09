@@ -137,7 +137,7 @@ const handleBuy = async (productId: string) => {
     });
     if (!isLogin.value) {
       uni.navigateTo({
-        url: "/pages/login/index",
+        url: `/pages/login/index?redirect=${encodeURIComponent(currentTabPath)}`,
       });
     }
   }
@@ -168,7 +168,7 @@ const handlePaySuccess = async () => {
 
 const handleGotoLogin = () => {
   uni.navigateTo({
-    url: "/pages/login/index",
+    url: `/pages/login/index?redirect=${encodeURIComponent(currentTabPath)}`,
   });
 };
 

@@ -1,13 +1,42 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import { onLoad } from "@dcloudio/uni-app";
+import { reactive, ref } from "vue";
 import { useAuth } from "@/hooks/use-auth";
 
-const { login, loginPending, isLogin } = useAuth();
+const { login, loginPending } = useAuth();
+const defaultRedirectUrl = "/pages/home/index";
+const redirectUrl = ref(defaultRedirectUrl);
 
 const form = reactive({
   phone: "",
   wxNumber: "",
 });
+
+onLoad((options) => {
+  const target = typeof options?.redirect === "string" ? options.redirect : "";
+  if (!target) {
+    redirectUrl.value = defaultRedirectUrl;
+    return;
+  }
+  try {
+    redirectUrl.value = decodeURIComponent(target);
+  } catch {
+    redirectUrl.value = defaultRedirectUrl;
+  }
+});
+
+const navigateAfterLogin = () => {
+  const pages = getCurrentPages();
+  if (pages.length > 1) {
+    uni.navigateBack({
+      delta: 1,
+    });
+    return;
+  }
+  uni.reLaunch({
+    url: redirectUrl.value || defaultRedirectUrl,
+  });
+};
 
 const handleLogin = async () => {
   if (!form.phone.trim() && !form.wxNumber.trim()) {
@@ -26,9 +55,7 @@ const handleLogin = async () => {
       title: "登录成功",
       icon: "none",
     });
-    uni.switchTab({
-      url: "/pages/home/index",
-    });
+    navigateAfterLogin();
   } catch (error) {
     const message = error instanceof Error ? error.message : "登录失败";
     uni.showToast({
@@ -36,12 +63,6 @@ const handleLogin = async () => {
       icon: "none",
     });
   }
-};
-
-const gotoHome = () => {
-  uni.switchTab({
-    url: "/pages/home/index",
-  });
 };
 </script>
 
@@ -65,9 +86,6 @@ const gotoHome = () => {
         :maxlength="30"
       >
       <wd-button type="primary" :loading="loginPending" @click="handleLogin">立即登录</wd-button>
-      <wd-button v-if="isLogin" plain type="primary" @click="gotoHome">
-        返回首页
-      </wd-button>
     </view>
   </view>
 </template>
