@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onLoad, onShow } from "@dcloudio/uni-app";
 import { computed, ref } from "vue";
+import AppTabBar from "@/components/AppTabBar.vue";
 import ProductCard from "@/components/ProductCard.vue";
 import { useAuthStore } from "@/stores/auth";
 import { useShopStore } from "@/stores/shop";
@@ -8,7 +9,7 @@ import type { Product } from "@/api/types";
 import { useCategory } from "./hooks/useCategory";
 import { useProduct } from "./hooks/useProduct";
 
-const LOG_PREFIX = "[home/index]";
+const currentTabPath = "/pages/home/index";
 
 const authStore = useAuthStore();
 const shopStore = useShopStore();
@@ -248,7 +249,7 @@ onShow(() => {
       </scroll-view>
     </view>
 
-    <wd-popup v-model="payPopupVisible" position="bottom">
+    <wd-popup v-model="payPopupVisible" position="bottom" :z-index="100">
       <view class="pay-popup">
         <text class="popup-title">确认支付</text>
         <text v-if="currentProduct" class="popup-text">
@@ -260,6 +261,7 @@ onShow(() => {
         </view>
       </view>
     </wd-popup>
+    <AppTabBar :current-path="currentTabPath" />
   </view>
 </template>
 
@@ -270,7 +272,7 @@ onShow(() => {
 
 .layout {
   display: flex;
-  height: 100%;
+  height: calc(100% - 108rpx - env(safe-area-inset-bottom));
 }
 
 .category-panel {

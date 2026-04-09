@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    AppTabBar: typeof import('./components/AppTabBar.vue')['default']
     ProductCard: typeof import('./components/ProductCard.vue')['default']
   }
 }

@@ -2,12 +2,14 @@
 import { onPullDownRefresh } from "@dcloudio/uni-app";
 import { useQuery } from "@tanstack/vue-query";
 import { computed } from "vue";
+import AppTabBar from "@/components/AppTabBar.vue";
 import { orderApi } from "@/api/order";
 import type { OrderDto } from "@/api/order/types";
 import { useAuthStore } from "@/stores/auth";
 
 const authStore = useAuthStore();
 const isLogin = computed(() => authStore.isLogin);
+const currentTabPath = "/pages/orders/index";
 
 const orderQuery = useQuery({
   queryKey: ["orderList"],
@@ -62,12 +64,14 @@ const gotoLogin = () => {
         <text class="line">下单时间：{{ item.createdAt }}</text>
       </view>
     </view>
+    <AppTabBar :current-path="currentTabPath" />
   </view>
 </template>
 
 <style scoped lang="scss">
 .page {
   padding: 24rpx;
+  padding-bottom: calc(132rpx + env(safe-area-inset-bottom));
 }
 
 .empty {

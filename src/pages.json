@@ -32,26 +32,6 @@
     "navigationBarBackgroundColor": "#ffffff",
     "navigationBarTextStyle": "black"
   },
-  "tabBar": {
-    "color": "#7a7e83",
-    "selectedColor": "#1989fa",
-    "backgroundColor": "#ffffff",
-    "borderStyle": "black",
-    "list": [
-      {
-        "pagePath": "pages/home/index",
-        "text": "首页"
-      },
-      {
-        "pagePath": "pages/orders/index",
-        "text": "订单"
-      },
-      {
-        "pagePath": "pages/bills/index",
-        "text": "账单"
-      }
-    ]
-  },
   "easycom": {
     "autoscan": true,
     "custom": {
