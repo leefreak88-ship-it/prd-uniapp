@@ -8,6 +8,15 @@ export interface BillRequestPayload {
   sort?: SortReq;
 }
 
+/**
+ * 代付完成后生成账单参数
+ */
+export interface CreateBillReq {
+  orderId: string;
+  chatHandsId: string;
+  orderPrice: number;
+}
+
 export interface BillDto {
   createTime?: Date;
   id?: string;

@@ -25,6 +25,24 @@
       "style": {
         "navigationBarTitleText": "账号登录"
       }
+    },
+    {
+      "path": "pages/share/model/index",
+      "style": {
+        "navigationBarTitleText": "选择代付方式"
+      }
+    },
+    {
+      "path": "pages/share/preview/index",
+      "style": {
+        "navigationBarTitleText": "代付详情"
+      }
+    },
+    {
+      "path": "pages/share/pay/index",
+      "style": {
+        "navigationBarTitleText": "代付详情"
+      }
     }
   ],
   "globalStyle": {

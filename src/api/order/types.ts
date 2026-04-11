@@ -8,6 +8,16 @@ export interface OrderRequestPayload {
   sort?: SortReq;
 }
 
+/**
+ * 创建代付订单参数
+ */
+export interface CreateOrderReq {
+  goodsId: string;
+  orderPrice: number;
+  shareModelId: string;
+  chatHandsId?: string;
+}
+
 export interface OrderDto {
   chatHandsId?: string;
   chatHandsInfo?: ChatHandsInfo;

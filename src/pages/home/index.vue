@@ -34,13 +34,11 @@ const {
 } = useProduct();
 
 const payPopupVisible = ref(false);
-const currentOrderId = ref("");
 const currentProduct = ref<Product | null>(null);
 const initializing = ref(false);
 
 const categoryList = computed(() => categories.value);
 const productList = computed(() => products.value);
-const user = computed(() => authStore.user);
 const isLogin = computed(() => authStore.isLogin);
 const homeLoading = computed(() => {
   return (
@@ -50,7 +48,7 @@ const homeLoading = computed(() => {
 });
 const homeErrorMessage = computed(() => categoryErrorMessage.value || productErrorMessage.value);
 
-const initializeHomeData = async (source: string) => {
+const initializeHomeData = async () => {
   if (initializing.value) {
     return;
   }
@@ -85,34 +83,8 @@ const handleSelectCategory = (categoryId: string) => {
   // - 有缓存且未过期(staleTime 10分钟) → 直接用缓存，不发请求
 };
 
-const submitOrder = async (productId: string) => {
-  const currentUser = user.value;
-  if (!currentUser) {
-    throw new Error("请先登录");
-  }
-  // const order = await createOrder(productId, currentUser.id);
-  // shopStore.orders.unshift(order);
-  // shopStore.saveState();
-  // return order;
-};
-
-const confirmPay = async (orderId: string) => {
-  const currentUser = user.value;
-  if (!currentUser) {
-    throw new Error("请先登录");
-  }
-  const targetOrder = shopStore.orders.find((item) => item.id === orderId);
-  if (!targetOrder || targetOrder.userId !== currentUser.id || targetOrder.status === "paid") {
-    return;
-  }
-  // const { paidOrder, bill } = await payOrder(targetOrder);
-    // shopStore.orders = shopStore.orders.map((item) => (item.id === orderId ? paidOrder : item));
-    // shopStore.bills.unshift(bill);
-  // shopStore.saveState();
-};
-
 const hasPurchased = (productId: string) => {
-  const currentUser = user.value;
+  const currentUser = authStore.user;
   if (!currentUser) {
     return false;
   }
@@ -120,50 +92,42 @@ const hasPurchased = (productId: string) => {
 };
 
 const handleBuy = async (productId: string) => {
+  if (!isLogin.value) {
+    uni.showToast({
+      title: "请先登录",
+      icon: "none",
+    });
+    uni.navigateTo({
+      url: `/pages/login/index?redirect=${encodeURIComponent(currentTabPath)}`,
+    });
+    return;
+  }
   const target = productList.value.find((item) => item.id === productId) ?? null;
   if (!target) {
     return;
   }
-  try {
-    const order = await submitOrder(productId);
-    // currentOrderId.value = order.id;
-    currentProduct.value = target;
-    payPopupVisible.value = true;
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "下单失败";
-    uni.showToast({
-      title: message,
-      icon: "none",
-    });
-    if (!isLogin.value) {
-      uni.navigateTo({
-        url: `/pages/login/index?redirect=${encodeURIComponent(currentTabPath)}`,
-      });
-    }
-  }
+  currentProduct.value = target;
+  payPopupVisible.value = true;
 };
 
-const handlePaySuccess = async () => {
-  if (!currentOrderId.value) {
-    return;
-  }
-  try {
-    await confirmPay(currentOrderId.value);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "支付失败";
-    uni.showToast({
-      title: message,
-      icon: "none",
-    });
+// 分享代付：跳转到分享模型选择页，带上当前选中的商品信息
+const handleShareForPay = () => {
+  const target = currentProduct.value;
+  if (!target) {
     return;
   }
   payPopupVisible.value = false;
+  uni.navigateTo({
+    url: `/pages/share/model/index?productId=${encodeURIComponent(target.id)}&productName=${encodeURIComponent(target.name)}&price=${target.price}`,
+  });
+};
+
+// 立即支付：按需求保留按钮，暂不实现功能
+const handlePayNow = () => {
   uni.showToast({
-    title: "支付成功，账单已生成",
+    title: "立即支付暂未开放",
     icon: "none",
   });
-  currentOrderId.value = "";
-  currentProduct.value = null;
 };
 
 const handleGotoLogin = () => {
@@ -182,12 +146,12 @@ const handleLogout = () => {
 };
 
 onLoad(() => {
-  void initializeHomeData("onLoad");
+  void initializeHomeData();
 });
 
 onShow(() => {
   if (!categoryList.value.length && !productList.value.length) {
-    void initializeHomeData("onShow-empty-list");
+    void initializeHomeData();
     return;
   }
   if (activeCategoryId.value && !productList.value.length) {
@@ -256,8 +220,8 @@ onShow(() => {
           商品：{{ currentProduct.name }}，金额：¥{{ currentProduct.price }}
         </text>
         <view class="popup-actions">
-          <wd-button plain @click="payPopupVisible = false">稍后支付</wd-button>
-          <wd-button type="primary" @click="handlePaySuccess">支付成功</wd-button>
+          <wd-button plain @click="handleShareForPay">分享代付</wd-button>
+          <wd-button type="primary" @click="handlePayNow">立即支付</wd-button>
         </view>
       </view>
     </wd-popup>
